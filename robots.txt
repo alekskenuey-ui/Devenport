@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /koshyk/
+Disallow: /poshuk/
 Disallow: /dyakuyemo/
 
 Sitemap: https://devenport.shop/sitemap.xml
