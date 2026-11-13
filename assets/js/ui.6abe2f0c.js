@@ -84,3 +84,35 @@
   main.addEventListener("click", open);
   main.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
 }(window, document);
+
+/* Buy-now buttons (sticky bar, closing banner), swipe on the gallery, photo counter */
+!function (w, d) {
+  "use strict";
+  var qtyEl = d.getElementById("qtyVal");
+  [].slice.call(d.querySelectorAll("[data-buy-now]")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      var id = +b.getAttribute("data-buy-now"), n = Math.max(1, +(qtyEl && qtyEl.textContent) || 1);
+      if (!w.DPCart) return;
+      var item = w.DPCart.byId(id);
+      w.DPCart.add(id, n);
+      if (w.Tracking && item) w.Tracking.addToCart(item, n);
+      setTimeout(function () { location.href = w.DP ? w.DP.url("/koshyk/") : "/koshyk/"; }, 120);
+    });
+  });
+  var main = d.querySelector(".gal__main"), thumbs = [].slice.call(d.querySelectorAll(".thumbs button"));
+  if (!main || thumbs.length < 2) return;
+  var n = d.createElement("span"); n.className = "gal__n"; n.setAttribute("aria-hidden", "true"); main.appendChild(n);
+  function cur() { for (var i = 0; i < thumbs.length; i++) if (thumbs[i].classList.contains("is-active")) return i; return 0; }
+  function paint() { n.textContent = (cur() + 1) + " / " + thumbs.length; }
+  thumbs.forEach(function (t) { t.addEventListener("click", function () { setTimeout(paint, 0); }); });
+  paint();
+  var x0, y0, swiped = false;
+  main.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; swiped = false; }, { passive: true });
+  main.addEventListener("touchend", function (e) {
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+    swiped = true;
+    thumbs[(cur() + (dx < 0 ? 1 : thumbs.length - 1)) % thumbs.length].click();
+  }, { passive: true });
+  main.addEventListener("click", function (e) { if (swiped) { e.stopImmediatePropagation(); e.preventDefault(); swiped = false; } }, true);
+}(window, document);
