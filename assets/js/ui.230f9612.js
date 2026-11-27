@@ -116,5 +116,3 @@
   }, { passive: true });
   main.addEventListener("click", function (e) { if (swiped) { e.stopImmediatePropagation(); e.preventDefault(); swiped = false; } }, true);
 }(window, document);
-
-;(function(){var bar=document.querySelector(".topbar[data-countdown],.topbar");if(!bar)return;var cfg=(window.DP_CONFIG||{}).promo||{};var until=cfg.until;if(!until)return;var end=new Date(until+"T23:59:59").getTime();var els={};["d","h","m","s"].forEach(function(k){els[k]=bar.querySelector('[data-cd="'+k+'"]')});function p(n){return n<10?"0"+n:""+n}function tick(){var ms=end-Date.now();if(ms<=0){bar.hidden=true;return false}var s=Math.floor(ms/1000);if(els.d)els.d.textContent=p(Math.floor(s/86400));if(els.h)els.h.textContent=p(Math.floor(s%86400/3600));if(els.m)els.m.textContent=p(Math.floor(s%3600/60));if(els.s)els.s.textContent=p(s%60);return true}if(tick()){var iv=setInterval(function(){if(!tick())clearInterval(iv)},1000)}})();
