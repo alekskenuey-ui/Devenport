@@ -116,3 +116,23 @@
   }, { passive: true });
   main.addEventListener("click", function (e) { if (swiped) { e.stopImmediatePropagation(); e.preventDefault(); swiped = false; } }, true);
 }(window, document);
+
+/* Sticky order bar: live price and highlighted discount tier */
+!function (w, d) {
+  "use strict";
+  var bar = d.getElementById("sticky"), qtyEl = d.getElementById("qtyVal"), buy = bar && bar.querySelector("[data-buy-now]");
+  if (!bar || !buy || !w.DPCart) return;
+  var id = +buy.getAttribute("data-buy-now"), item = w.DPCart.byId(id);
+  var now = bar.querySelector("[data-sprice]"), old = bar.querySelector("[data-sold]"), tiers = [].slice.call(bar.querySelectorAll("[data-t]"));
+  if (!item) return;
+  function paint() {
+    var qty = Math.max(1, +(qtyEl && qtyEl.textContent) || 1), total = item.price * qty, have = w.DPCart.count() + qty;
+    var pc = w.DPCart.promoActive() ? w.DPCart.percentFor(have) : 0, off = Math.round(total * pc / 100);
+    now.textContent = w.DPCart.money(total - off);
+    old.hidden = !pc; old.textContent = pc ? w.DPCart.money(total) : "";
+    tiers.forEach(function (t) { var n = +t.getAttribute("data-t"); t.classList.toggle("is-on", pc > 0 && (n === 3 ? have >= 3 : have === n)); });
+  }
+  if (qtyEl) new MutationObserver(paint).observe(qtyEl, { childList: true, characterData: true, subtree: true });
+  w.DPCart.subscribe(paint);
+  paint();
+}(window, document);
