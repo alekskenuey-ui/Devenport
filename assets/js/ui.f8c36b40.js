@@ -132,6 +132,14 @@
     old.hidden = !pc; old.textContent = pc ? w.DPCart.money(total) : "";
     tiers.forEach(function (t) { var n = +t.getAttribute("data-t"); t.classList.toggle("is-on", pc > 0 && (n === 3 ? have >= 3 : have === n)); });
   }
+  tiers.forEach(function (t) {
+    t.addEventListener("click", function () {
+      var want = Math.max(1, +t.getAttribute("data-t") - w.DPCart.count()), plus = d.getElementById("qtyPlus"), minus = d.getElementById("qtyMinus");
+      if (!qtyEl || !plus || !minus) return;
+      for (var i = 0; i < 12 && (+qtyEl.textContent || 1) !== want; i++) ((+qtyEl.textContent || 1) < want ? plus : minus).click();
+      paint();
+    });
+  });
   if (qtyEl) new MutationObserver(paint).observe(qtyEl, { childList: true, characterData: true, subtree: true });
   w.DPCart.subscribe(paint);
   paint();
