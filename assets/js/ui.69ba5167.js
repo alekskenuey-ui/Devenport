@@ -9,15 +9,15 @@
   function money(n) { return w.DPCart.money(n); }
   function paint() {
     var qty = Math.max(1, +qtyEl.textContent || 1), total = price * qty;
-    var need = cfg.minItems || 2, have = w.DPCart.count() + qty;
+    var have = w.DPCart.count() + qty;
     if (!w.DPCart.promoActive()) { box.hidden = true; return; }
-    var on = have >= need, off = on ? Math.round(total * (cfg.percent || 10) / 100) : 0;
+    var pc = w.DPCart.percentFor(have), nx = w.DPCart.nextTier(have), on = pc > 0, off = on ? Math.round(total * pc / 100) : 0;
     box.classList.toggle("is-on", on);
-    bar.style.width = Math.min(100, Math.round(have / need * 100)) + "%";
+    bar.style.width = (nx ? Math.min(100, Math.round(have / nx.min * 100)) : 100) + "%";
     row.innerHTML = (on ? "<s>" + money(total) + "</s>" : "") + "<b>" + money(total - off) + "</b>";
-    msg.textContent = on
-      ? "Знижка −" + (cfg.percent || 10) + "% застосована: економія " + money(off) + ". Остаточну суму бачите в кошику."
-      : "Додайте ще " + (need - have) + " од. — і діятиме знижка −" + (cfg.percent || 10) + "% до " + (cfg.untilLabel || "") + ".";
+    msg.textContent = (on ? "Знижка −" + pc + "% застосована: економія " + money(off) + ". " : "")
+      + (nx ? "Додайте ще " + (nx.min - have) + " од. — знижка зросте до −" + nx.percent + "%. " : "Максимальна знижка −" + pc + "%. ")
+      + "Остаточну суму бачите в кошику.";
   }
   new MutationObserver(paint).observe(qtyEl, { childList: true, characterData: true, subtree: true });
   w.DPCart.subscribe(paint);
