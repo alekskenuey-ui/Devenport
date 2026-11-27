@@ -130,7 +130,8 @@
     var pc = w.DPCart.promoActive() ? w.DPCart.percentFor(have) : 0, off = Math.round(total * pc / 100);
     now.textContent = w.DPCart.money(total - off);
     old.hidden = !pc; old.textContent = pc ? w.DPCart.money(total) : "";
-    tiers.forEach(function (t) { var n = +t.getAttribute("data-t"); t.classList.toggle("is-on", pc > 0 && (n === 3 ? have >= 3 : have === n)); });
+    var cur = have >= 3 ? 3 : have; tiers.forEach(function (t) { var n = +t.getAttribute("data-t"), on = pc > 0 && n === cur; t.classList.toggle("is-on", on); t.setAttribute("aria-pressed", on); });
+    bar.querySelector(".sticky__terms").setAttribute("data-cur", pc > 0 ? cur : 0);
   }
   tiers.forEach(function (t) {
     t.addEventListener("click", function () {
